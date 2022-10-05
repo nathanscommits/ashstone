@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Gothic+A1&display=swap');
+body {background-color: rgb(81, 81, 81); color: rgb(255, 255, 255);overflow: hidden; display: flex; height: 100%; width: 100vw; margin: 0; padding-bottom: 3rem; font-family: 'Gothic A1', sans-serif; }
+/* body *{border: 1px red solid;} */
+#form { width: 50vw; background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+#input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+#input:focus { outline: none; }
+#form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+
+#messages { list-style-type: none; margin: 0; padding: 0; position: fixed; bottom: 4rem; width: 50vw;}
+#messages > li { padding: 0.5rem 1rem; overflow-wrap: break-word;}
+#map {width: 100%; max-width: 512px; display: block; margin: auto; height: auto;}
+#console {background-color: black; color: rgb(255, 0, 0);position: relative; height: 100vh; width: 50vw;}
+#right-panel{width: 50vw; position: fixed; right: 0;}
+#login {width: 100%; display: flex; justify-content: center; margin: 2rem auto; padding: 0.5rem;}
+/* #login * {display: block; margin: auto;} */
+/* #messages > li:nth-child(odd) { background: #efefef; } */
