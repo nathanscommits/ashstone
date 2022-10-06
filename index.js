@@ -13,8 +13,8 @@ app.set("views", "views");
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
-import {getMap, getPlayer, updatePlayer} from './db.js'
-import {processCmd} from './functions.js'
+import {database} from './modules/db.js'
+import {processCmd} from './modules/cmds.js'
 
 app.get('/', (req, res) => {
   res.render('index');
@@ -24,7 +24,7 @@ io.on('connection', (socket) => {
     console.log('a user connected', socket.id);
 
     socket.on('login', async (usr) => {
-        const player = await getPlayer({username: usr.username, password: usr.password})
+        const player = await database.collection('players').findOne({username: usr.username, password: usr.password})
         player ? console.log("login success")
         : console.log('failed login')
 

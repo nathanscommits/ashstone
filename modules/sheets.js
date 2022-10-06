@@ -1,5 +1,8 @@
 import { google } from "googleapis"
-import { updateItem, updateMap, updateProperties } from "./db.js";
+import {database } from "./db.js";
+const itemsCollection = database.collection('items')
+const mapsCollection = database.collection('maps')
+const propsCollection = database.collection('properties')
 const spreadsheetId = process.env.SPREADSHEET_ID
 
 async function readSheet(range, spreadsheetId) {
@@ -59,7 +62,7 @@ export const updateSkills = async () => {
 
     // console.log(skills)
     
-    updateProperties({name: 'values', set: {skills: skills}})
+    propsCollection.updateOne({name: 'values'}, {$set: {skills: skills}}, {upsert: true})
 }
 export const updateStats = async () => {
     const st = await readSheet("stats!A:C", spreadsheetId)
@@ -75,7 +78,7 @@ export const updateStats = async () => {
 
     // console.log(stats)
     
-    updateProperties({name: 'values', set: {stats: stats}})
+    propsCollection.updateOne({name: 'values'}, {$set: {stats: stats}}, {upsert: true})
 }
 export const updateSpecies = async () => {
     const st = await readSheet("species!A:D", spreadsheetId)
@@ -98,8 +101,7 @@ export const updateSpecies = async () => {
     })
 
     // console.log(stats)
-    
-    updateProperties({name: 'values', set: {species: stats}})
+    propsCollection.updateOne({name: 'values'}, {$set: {species: stats}}, {upsert: true})
 }
 export const updateMaps = async () => {
     const st = await readSheet("maps!A:G", spreadsheetId)
@@ -122,7 +124,7 @@ export const updateMaps = async () => {
         maps.desc = s[5]
         maps.npcs = s[6].split(",").map(m => m.trim())
       
-        updateMap({id: maps.id, set: maps})
+        mapsCollection.updateOne({id: maps.id}, {$set: maps}, {upsert: true})
     })
 
     // console.log(stats)
@@ -132,7 +134,7 @@ export const updateItems = async () => {
     const st = await readSheet("items!A:AC", spreadsheetId)
     // objectID	Object Name (Display)	Description	Hidden Amount (value to beat)	Takable	Take Message	Sittable	Sit Message	Sellable	Value	Sell Message	Destroyable	Destroy Message	Tradable	Trade Message	Throwable	Throw Damage	Throw Message	Wearable	Wearable Bonus	Wear Message	Consumable	Consuming Bonus	Consume Message	Placable	Place Message	Appraisal Type	Crafting Ingredients	Crafting skill										
     st.forEach(s => {
-        while(s.length < 29) s.push("")
+        while(s.length < 31) s.push("")
         let items = {
             id: s[0],
             name: s[1],
@@ -159,6 +161,8 @@ export const updateItems = async () => {
             wearing: s[19],
             consuming: s[22],
             placing: s[24],
+            tasting: s[30],
+            smelling: s[29],
         }
 
         items.appraisalType = s[25]
@@ -186,7 +190,7 @@ export const updateItems = async () => {
             if(b[1] > 0)items.craftingSkill[b[0]] = parseInt(b[1])
         })
       
-        updateItem({id: items.id, set: items})
+        itemsCollection.updateOne({id: items.id}, {$set: items}, {upsert: true})
     })
 
     // console.log(stats)
