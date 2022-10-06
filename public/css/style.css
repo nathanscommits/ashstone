@@ -11,6 +11,6 @@ body {background-color: rgb(81, 81, 81); color: rgb(255, 255, 255);overflow: hid
 #map {width: 100%; max-width: 512px; display: block; margin: auto; height: auto;}
 #console {background-color: black; color: rgb(255, 0, 0);position: relative; height: 100vh; width: 50vw;}
 #right-panel{width: 50vw; position: fixed; right: 0;}
-#login {width: 100%; display: flex; justify-content: center; margin: 2rem auto; padding: 0.5rem;}
+#login {width: 100%; justify-content: center; margin: 2rem auto; padding: 0.5rem;}
 /* #login * {display: block; margin: auto;} */
 /* #messages > li:nth-child(odd) { background: #efefef; } */

@@ -29,10 +29,11 @@ socket.on('newMap', (map) => {
     document.getElementById('map').src = 'img/' + map + '.jpg'
 })
 
-socket.on('chat message', function(msg) {
-msg = socket.id + ' says: ' + msg.substring(3)
+socket.on('chat message', (data) => {
+data.msg = socket.id + ' says: ' + data.msg.substring(3)
 var item = document.createElement('li');
-item.textContent = msg;
+item.textContent = data.msg;
+item.style.color = data.color
 messages.appendChild(item);
 window.scrollTo(0, document.body.scrollHeight);
 });

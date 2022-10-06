@@ -27,11 +27,12 @@ io.on('connection', (socket) => {
         const player = await getPlayer({username: usr.username, password: usr.password})
         player ? console.log("login success")
         : console.log('failed login')
+
     })
 
     socket.on('chat message', (msg) => {
         msg.split(" ")[0] !== 'say' ? processCmd(msg)
-        : io.emit('chat message', msg);
+        : io.emit('chat message', {msg, color: 'rgb(255,0,0)'});
     });
 
 });

@@ -1,0 +1,194 @@
+import { google } from "googleapis"
+import { updateItem, updateMap, updateProperties } from "./db.js";
+const spreadsheetId = process.env.SPREADSHEET_ID
+
+async function readSheet(range, spreadsheetId) {
+    //   const { request, name } = req.body;
+  try{
+    const auth = new google.auth.GoogleAuth({
+      projectId: "ashstone",
+      credentials: {
+        private_key: process.env.PRIVATE_KEY.replace(/\\n/gm, "\n"),
+        client_email: process.env.CLIENT_EMAIL,
+      },
+      scopes: "https://www.googleapis.com/auth/spreadsheets",
+    });
+  
+    // Create client instance for auth
+    const client = await auth.getClient();
+  
+    // Instance of Google Sheets API
+    const googleSheets = google.sheets({ version: "v4", auth: client });
+  
+    // Get metadata about spreadsheet
+    //   const metaData = await googleSheets.spreadsheets.get({
+    //     auth,
+    //     spreadsheetId,
+    //   });
+  
+    // Read rows from spreadsheet
+    let getRows = await googleSheets.spreadsheets.values.get({
+      auth,
+      spreadsheetId,
+      range, //"Sheet1!A:A"
+    });
+  
+    getRows = getRows.data.values;
+    getRows.shift();
+    //console.log(getRows);
+  
+    return getRows;
+  }catch(e) {
+    console.log(e)
+    return []
+  }
+};
+export const updateSkills = async () => {
+    const sk = await readSheet("skills!A:F", spreadsheetId)
+    let skills = {}
+    sk.forEach(s => {
+        while(s.length < 6) s.push("")
+        skills[s[0]] = {}
+        skills[s[0]].id = s[0]
+        skills[s[0]].name = s[1]
+        skills[s[0]].value = parseInt(s[2])
+        skills[s[0]].desc = s[3]
+        skills[s[0]].rolls = s[4].split(",").map(m => m.trim())
+        skills[s[0]].requires = s[5].split(",").map(m => m.trim())
+    })
+
+    // console.log(skills)
+    
+    updateProperties({name: 'values', set: {skills: skills}})
+}
+export const updateStats = async () => {
+    const st = await readSheet("stats!A:C", spreadsheetId)
+    let stats = {}
+    st.forEach(s => {
+        while(s.length < 4) s.push("")
+        stats[s[0]] = {}
+        stats[s[0]].id = s[0]
+        stats[s[0]].name = s[1]
+        stats[s[0]].value = parseInt(s[2])
+        stats[s[0]].desc = s[3]
+    })
+
+    // console.log(stats)
+    
+    updateProperties({name: 'values', set: {stats: stats}})
+}
+export const updateSpecies = async () => {
+    const st = await readSheet("species!A:D", spreadsheetId)
+    let stats = {}
+    st.forEach(s => {
+        while(s.length < 4) s.push("")
+        stats[s[0]] = {}
+        stats[s[0]].name = s[0]
+        stats[s[0]].stats = {}
+        s[1].split(",").map(m => m.trim()).forEach(j => { 
+            const b = j.split(":").map( l => l.trim())
+            stats[s[0]].stats[b[0]] = parseInt(b[1])
+        })
+        stats[s[0]].skills = {}
+        s[2].split(",").map(m => m.trim()).forEach(j => { 
+            const b = j.split(":").map( l => l.trim())
+            stats[s[0]].skills[b[0]] = parseInt(b[1])
+        })
+        stats[s[0]].vision = s[3]
+    })
+
+    // console.log(stats)
+    
+    updateProperties({name: 'values', set: {species: stats}})
+}
+export const updateMaps = async () => {
+    const st = await readSheet("maps!A:G", spreadsheetId)
+    st.forEach(s => {
+        while(s.length < 7) s.push("")
+        let maps = {}
+        maps.id = s[0]
+        maps.name = s[1]
+        maps.connections = {}
+        s[2].split(",").map(m => m.trim()).forEach(j => { 
+            const b = j.split(":").map( l => l.trim())
+            maps.connections[b[0]] = b[1]
+        })
+        maps.items = s[3].split(",").map(m => m.trim())
+        maps.modifiers = {}
+        s[4].split(",").map(m => m.trim()).forEach(j => { 
+            const b = j.split(":").map( l => l.trim())
+            maps.modifiers[b[0]] = parseInt(b[1])
+        })
+        maps.desc = s[5]
+        maps.npcs = s[6].split(",").map(m => m.trim())
+      
+        updateMap({id: maps.id, set: maps})
+    })
+
+    // console.log(stats)
+    
+}
+export const updateItems = async () => {
+    const st = await readSheet("items!A:AC", spreadsheetId)
+    // objectID	Object Name (Display)	Description	Hidden Amount (value to beat)	Takable	Take Message	Sittable	Sit Message	Sellable	Value	Sell Message	Destroyable	Destroy Message	Tradable	Trade Message	Throwable	Throw Damage	Throw Message	Wearable	Wearable Bonus	Wear Message	Consumable	Consuming Bonus	Consume Message	Placable	Place Message	Appraisal Type	Crafting Ingredients	Crafting skill										
+    st.forEach(s => {
+        while(s.length < 29) s.push("")
+        let items = {
+            id: s[0],
+            name: s[1],
+            desc: s[2],
+        }
+        items.props = {
+            takeable : s[3] === 'yes' ? true : false,
+            sittable : s[5] === 'yes' ? true : false,
+            sellable : s[7] === 'yes' ? true : false,
+            destroyable : s[10] === 'yes' ? true : false,
+            tradable : s[12] === 'yes' ? true : false,
+            throwable : s[14] === 'yes' ? true : false,
+            wearable : s[17] === 'yes' ? true : false,
+            consumable : s[20] === 'yes' ? true : false,
+            placable : s[23] === 'yes' ? true : false,
+        }
+        items.messages = {
+            taking : s[4],
+            sitting : s[6],
+            selling : s[9],
+            destroying: s[11],
+            trading: s[13],
+            throwing: s[16],
+            wearing: s[19],
+            consuming: s[22],
+            placing: s[24],
+        }
+
+        items.appraisalType = s[25]
+        items.value = s[8] === '' ?  0 : parseInt(s[8])
+        items.hiddenAmount = {}
+        s[28].split(",").map(m => m.trim()).forEach(j => { 
+            const b = j.split(":").map( l => l.trim())
+            items.hiddenAmount[b[0]] = b[1]
+        })
+        items.throwDamage = s[15] === '' ? 0 : parseInt(s[15])
+        items.craftingIngredients = s[26].split(",").map(m => m.trim())
+        items.wearableBonus = {}
+        s[18].split(",").map(m => m.trim()).forEach(j => { 
+            const b = j.split(":").map( l => l.trim())
+            if(b[1] > 0)items.wearableBonus[b[0]] = parseInt(b[1])
+        })
+        items.consumeBonus = {}
+        s[21].split(",").map(m => m.trim()).forEach(j => { 
+            const b = j.split(":").map( l => l.trim())
+            if(b[1] > 0)items.consumeBonus[b[0]] = parseInt(b[1])
+        })
+        items.craftingSkill = {}
+        s[27].split(",").map(m => m.trim()).forEach(j => { 
+            const b = j.split(":").map( l => l.trim())
+            if(b[1] > 0)items.craftingSkill[b[0]] = parseInt(b[1])
+        })
+      
+        updateItem({id: items.id, set: items})
+    })
+
+    // console.log(stats)
+    
+}
