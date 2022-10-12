@@ -15,28 +15,55 @@ app.use(express.static("public"));
 
 import {database} from './modules/db.js'
 import {processCmd} from './modules/cmds.js'
+import { decrypt, login } from './modules/security.js';
 
+app.get('/logout', (req, res) => {
+  res.render('logout');
+});
+app.get('/register', (req, res) => {
+  res.render('register');
+});
 app.get('/', (req, res) => {
   res.render('index');
 });
 
+// Heres the websocket stuff. All the clients communicate with the server from here.
 io.on('connection', (socket) => {
     console.log('a user connected', socket.id);
 
-    socket.on('login', async (usr) => {
-        const player = await database.collection('players').findOne({username: usr.username, password: usr.password})
-        player ? console.log("login success")
-        : console.log('failed login')
-
+    //tries to register the client with a new account
+    socket.on('register', async (usr) => {
+        const player = await database.collection('players').findOne({username: usr.username})
+        player ? io.to(socket.id).emit("err", "User already exists with that name.")
+        : console.log('register: ', usr)
     })
 
+    //tries to log the client in
+    socket.on('login', async (usr) => {
+        const player = await database.collection('players').findOne({username: usr.username, password: usr.password})
+        if(player) {
+            console.log("login success")
+            const cryptData = await login(player)
+            console.log(cryptData)
+            io.to(socket.id).emit("logInSuccess", cryptData)
+        }  
+        else console.log('failed login')
+
+    })
+    // sends a secure token to the client if they are successful in logging in. This token is used to identify the client for the remainder of their session, in a semi secure way
+    socket.on('loggedIn', async (token) => {
+        const de = await decrypt(token)
+        console.log("decrypted: ", de)
+    })
+
+    // This handles client console input
     socket.on('chat message', (msg) => {
         msg.split(" ")[0] !== 'say' ? processCmd(msg)
+        //sending a message to the clients console is done with an object including the {msg} and the {color} to display it in, both expected to be strings.
         : io.emit('chat message', {msg, color: 'rgb(255,0,0)'});
     });
 
 });
-
 
 
 server.listen(process.env.PORT, () => console.log('listening on *:', process.env.PORT) );

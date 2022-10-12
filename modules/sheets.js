@@ -1,3 +1,5 @@
+//All of this stuff just takes the data from google sheets and puts it into mongodb with the right schema.
+
 import { google } from "googleapis"
 import {database } from "./db.js";
 const itemsCollection = database.collection('items')
@@ -47,10 +49,10 @@ async function readSheet(range, spreadsheetId) {
   }
 };
 export const updateSkills = async () => {
-    const sk = await readSheet("skills!A:F", spreadsheetId)
+    const sk = await readSheet("skills!A:G", spreadsheetId)
     let skills = {}
     sk.forEach(s => {
-        while(s.length < 6) s.push("")
+        while(s.length < 7) s.push("")
         skills[s[0]] = {}
         skills[s[0]].id = s[0]
         skills[s[0]].name = s[1]
@@ -58,6 +60,7 @@ export const updateSkills = async () => {
         skills[s[0]].desc = s[3]
         skills[s[0]].rolls = s[4].split(",").map(m => m.trim())
         skills[s[0]].requires = s[5].split(",").map(m => m.trim())
+        skills[s[0]].vs = s[6].split(",").map(m => m.trim())
     })
 
     // console.log(skills)
@@ -104,9 +107,9 @@ export const updateSpecies = async () => {
     propsCollection.updateOne({name: 'values'}, {$set: {species: stats}}, {upsert: true})
 }
 export const updateMaps = async () => {
-    const st = await readSheet("maps!A:G", spreadsheetId)
+    const st = await readSheet("maps!A:J", spreadsheetId)
     st.forEach(s => {
-        while(s.length < 7) s.push("")
+        while(s.length < 10) s.push("")
         let maps = {}
         maps.id = s[0]
         maps.name = s[1]
@@ -123,6 +126,9 @@ export const updateMaps = async () => {
         })
         maps.desc = s[5]
         maps.npcs = s[6].split(",").map(m => m.trim())
+        maps.locked = s[7].split(",").map(m => m.trim())
+        maps.openDoors = s[8].split(",").map(m => m.trim())
+        maps.adminLocked = s[9].split(",").map(m => m.trim())
       
         mapsCollection.updateOne({id: maps.id}, {$set: maps}, {upsert: true})
     })
@@ -134,7 +140,7 @@ export const updateItems = async () => {
     const st = await readSheet("items!A:AC", spreadsheetId)
     // objectID	Object Name (Display)	Description	Hidden Amount (value to beat)	Takable	Take Message	Sittable	Sit Message	Sellable	Value	Sell Message	Destroyable	Destroy Message	Tradable	Trade Message	Throwable	Throw Damage	Throw Message	Wearable	Wearable Bonus	Wear Message	Consumable	Consuming Bonus	Consume Message	Placable	Place Message	Appraisal Type	Crafting Ingredients	Crafting skill										
     st.forEach(s => {
-        while(s.length < 31) s.push("")
+        while(s.length < 36) s.push("")
         let items = {
             id: s[0],
             name: s[1],
@@ -150,6 +156,8 @@ export const updateItems = async () => {
             wearable : s[17] === 'yes' ? true : false,
             consumable : s[20] === 'yes' ? true : false,
             placable : s[23] === 'yes' ? true : false,
+            locked : s[34] === 'yes' ? true : false,
+            underwater : s[35] === 'yes' ? true : false,
         }
         items.messages = {
             taking : s[4],
@@ -189,6 +197,9 @@ export const updateItems = async () => {
             const b = j.split(":").map( l => l.trim())
             if(b[1] > 0)items.craftingSkill[b[0]] = parseInt(b[1])
         })
+        items.inventorySize = s[31] === '' ?  0 : parseInt(s[31])
+        items.takesUpSpace = s[32] === '' ?  0 : parseInt(s[32])
+        items.craftBench = s[23].split(",").map(m => m.trim())
       
         itemsCollection.updateOne({id: items.id}, {$set: items}, {upsert: true})
     })

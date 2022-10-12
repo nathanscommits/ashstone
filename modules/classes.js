@@ -1,5 +1,8 @@
+//just a place to dump all the classes. Probably won't be too many
+
 import { database } from "./db.js"
 const characters = database.collection('characteras')
+const players = database.collection('players')
 const species = database.collection('species')
 export class Character {
     //add species stats to default stats
@@ -45,5 +48,17 @@ export class Inventory {
 
         //remove
         characters.updateOne({name: this.uid}, {$pull: {inventory: this}}, {upsert: true})
+    }
+}
+
+export class User {
+    constructor({username, password, ip }) {
+        this.username = username
+        this.password = password
+        this.ip = ip
+    }
+
+    add() {
+        players.updateOne({username: this.username, password: this.password}, {$set: this}, {upsert: true})
     }
 }
