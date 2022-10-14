@@ -57,11 +57,7 @@ io.on('connection', (socket) => {
     })
 
     // This handles client console input
-    socket.on('chat message', (msg) => {
-        msg.split(" ")[0] !== 'say' ? processCmd(msg)
-        //sending a message to the clients console is done with an object including the {msg} and the {color} to display it in, both expected to be strings.
-        : io.emit('chat message', {msg, color: 'rgb(255,0,0)'});
-    });
+    socket.on('sendCmd', processCmd);
 
 });
 

@@ -32,7 +32,7 @@ export const login = async (user) => {
     const characterList = await characters.find({username: user.username}).toArray()
     // crypt user details
     delete user.password
-    const userCrypt = await crypt(JSON.stringify(user))
+    const userCrypt = await crypt(JSON.stringify(characterList[0]))
     // send crypt data to client
     return {token: userCrypt, characters: characterList}
 }

@@ -107,9 +107,9 @@ export const updateSpecies = async () => {
     propsCollection.updateOne({name: 'values'}, {$set: {species: stats}}, {upsert: true})
 }
 export const updateMaps = async () => {
-    const st = await readSheet("maps!A:J", spreadsheetId)
+    const st = await readSheet("maps!A:K", spreadsheetId)
     st.forEach(s => {
-        while(s.length < 10) s.push("")
+        while(s.length < 11) s.push("")
         let maps = {}
         maps.id = s[0]
         maps.name = s[1]
@@ -129,6 +129,7 @@ export const updateMaps = async () => {
         maps.locked = s[7].split(",").map(m => m.trim())
         maps.openDoors = s[8].split(",").map(m => m.trim())
         maps.adminLocked = s[9].split(",").map(m => m.trim())
+        maps.barredDoors = s[10].split(",").map(m => m.trim())
       
         mapsCollection.updateOne({id: maps.id}, {$set: maps}, {upsert: true})
     })
@@ -137,15 +138,29 @@ export const updateMaps = async () => {
     
 }
 export const updateItems = async () => {
-    const st = await readSheet("items!A:AC", spreadsheetId)
+    const st = await readSheet("items!A:AK", spreadsheetId)
     // objectID	Object Name (Display)	Description	Hidden Amount (value to beat)	Takable	Take Message	Sittable	Sit Message	Sellable	Value	Sell Message	Destroyable	Destroy Message	Tradable	Trade Message	Throwable	Throw Damage	Throw Message	Wearable	Wearable Bonus	Wear Message	Consumable	Consuming Bonus	Consume Message	Placable	Place Message	Appraisal Type	Crafting Ingredients	Crafting skill										
     st.forEach(s => {
-        while(s.length < 36) s.push("")
+        while(s.length < 37) s.push("")
         let items = {
             id: s[0],
             name: s[1],
             desc: s[2],
         }
+        items.keyFor = {}
+        s[36].split(";").map(m => m.trim()).forEach(j => { 
+            const b = j.split(":").map( l => l.trim())
+            if(b[0] === 'door') {
+                b[1].split(",").map(m => m.trim()).forEach(p => { 
+                    const c = p.split("=").map( q => q.trim())
+                    items.keyFor[b[0]] = {}
+                    items.keyFor[b[0]][c[0]] = c[1]
+                    console.log(c)
+                })
+            } else if(b[0] === 'item') {
+                items.keyFor[b[0]] = b[1].split(",").map(m => m.trim())
+            }
+        })
         items.props = {
             takeable : s[3] === 'yes' ? true : false,
             sittable : s[5] === 'yes' ? true : false,

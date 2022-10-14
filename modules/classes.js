@@ -6,12 +6,15 @@ const players = database.collection('players')
 const species = database.collection('species')
 export class Character {
     //add species stats to default stats
-    constructor({username, name, species, stats, skills}) {
+    constructor({username, name, species, stats, skills, inventory = [], wearing = {}, money = 0}) {
         this.username = username
         this.name = name
         this.species = species
         this.stats = stats
         this.skills = skills
+        this.inventory = inventory
+        this.wearing = wearing
+        this.money = money
     }
     async add(){
         const charExists = await characters.findOne({username: this.username, name: this.name})
@@ -48,6 +51,24 @@ export class Inventory {
 
         //remove
         characters.updateOne({name: this.uid}, {$pull: {inventory: this}}, {upsert: true})
+    }
+
+    //wearables
+    equip(){
+
+    }
+
+    unequip(){
+
+    }
+
+    //banking
+    deposit(){
+
+    }
+
+    withdraw(){
+
     }
 }
 

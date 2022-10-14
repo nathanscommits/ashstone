@@ -1,18 +1,22 @@
 //Handles client commands, sort of like a router?
 
 import { Character } from './classes.js'
-import { modDoor, moveTo } from './maps.js'
+import { modDoor, moveTo, searchMap } from './maps.js'
 import { crypt, decrypt } from './security.js'
 import { updateItems, updateMaps, updateSkills, updateSpecies, updateStats } from './sheets.js'
 
+export const say = (details) => {
+    const sender = JSON.parse(decrypt(details.token)).name
+    const msg = sender + " says: " + details.msg
+    //get everyone in the same location as sender
+
+    //loop through them, creating tokens and sending the messages
+    io.emit('say' + token, {msg, color: 'rgb(255,0,0)'});
+}
+
 // this object houses all the command functions
 const commands = {
-    'attack': (msg) => {
-        let player = msg.split(" ")
-        player.shift()
-        console.log('attacking ' + player.join(" "))
-    },
-    'createchar': () => {
+    'createchar': (details) => {
         const char = new Character({username: 'testing', name: 'testName', species: 'fox', stats: defaultStats, skills: defaultSkills})
         char.add()
     },
@@ -21,20 +25,17 @@ const commands = {
     'updatespecies': updateSpecies,
     'updatemaps': updateMaps,
     'updateitems': updateItems,
-    'open': modDoor,
-    'crypt': () => {
-        const c = crypt("salt", msg)
-        console.log(c)
-        console.log(decrypt("salt", c ))
-    }
+    'search': searchMap,
+    'door': modDoor,
+    'say': say,
 }
 
 // processCmd is the main router for commands from the client.
-export const processCmd = (msg) => {
-    console.log('message: ' + msg)
+export const processCmd = (details) => {
+    console.log('message: ' + details.msg)
 
     //extract the command from the string
-    const cmd = msg.split(" ")[0].toLowerCase()
+    const cmd = details.msg.split(" ")[0].toLowerCase()
 
     //list of possible direction commands
     const directions = ['n', 's', 'e', 'w']
@@ -42,8 +43,9 @@ export const processCmd = (msg) => {
     //if its a direction command, move to the map, otherwise look in the commands object
     if(directions.includes(cmd)) {
         //movement command
-        moveTo('testName', cmd)
+        moveTo(details)
     } else if(Object.keys(commands).includes(cmd)) {
-        commands[cmd](msg)
+        commands[cmd](details)
     }
 }
+
