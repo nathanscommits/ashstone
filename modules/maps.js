@@ -59,7 +59,7 @@ export const searchMap = async (details) => {
 
 //modify a doors status (open/closed/locked)
 export const modDoor = async (details) => {
-    const cmd = details.msg
+    const cmd = details.msg.substr(1)
     let playerDetails = JSON.parse(decrypt(details.token))
     const player = await characters.findOne({name: playerDetails.name, username: playerDetails.username})
     playerDetails.location = player.location

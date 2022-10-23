@@ -40,6 +40,15 @@
         </div> 
         <div id="stats"></div>
         <a href="/logout">logout</a>
+        <div id="availableCommands">
+          <h3>Available Commands:</h3>
+          <ul>
+            <li>[/search] to search the map for items, doors and people</li>
+            <li>[/me] to emote something to others on the same map</li>
+            <li>[/direction] to move to another map use / followed by the doors name, example: [/n] to move through the north door</li>
+            <li>[/door operation direction] operations are [open] [close], directions are the name of the door in question, example: [n] for the north door. So example command is [/door open n] to open the north door</li>
+          </ul>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
