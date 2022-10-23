@@ -40,6 +40,21 @@ export const moveTo = async (details) => {
     //update map image for player
     
     global.io.emit('newMap' + details.token, {map: map.connections[direction]})
+    searchMap(details)
+    alertNearby(details)
+}
+
+export const alertNearby = async (details) => {
+    let playerDetails = JSON.parse(decrypt(details.token))
+    const player = await database.collection("characters").findOne({name: playerDetails.name, username: playerDetails.username})
+    const nearby = await database.collection("characters").find({location: player.location}).toArray()
+
+    nearby.forEach(async n => {
+        if(n.name === player.name) return
+        console.log("name: ", n.name)
+        const ncrypt = await crypt(JSON.stringify({username: n.username, name:n.name, _id: n._id}))
+        io.emit('say' + ncrypt, {msg: `${player.name} has entered the room`, color: 'rgb(255,50,50)'});
+    })
 }
 
 export const searchMap = async (details) => {

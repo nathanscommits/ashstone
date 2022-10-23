@@ -76,6 +76,14 @@ export class Inventory {
     withdraw(){
 
     }
+
+    pickup(){
+
+    }
+
+    putdown(){
+        
+    }
 }
 
 export class User {
