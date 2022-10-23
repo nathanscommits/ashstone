@@ -3,7 +3,7 @@
 import { database } from "./db.js"
 const characters = database.collection('characters')
 const players = database.collection('players')
-const species = database.collection('species')
+const properties = database.collection('properties')
 export class Character {
     //add species stats to default stats
     constructor({username, name, species, stats, skills, inventory = [], wearing = {}, money = 0}) {
@@ -21,7 +21,8 @@ export class Character {
         const charExists = await characters.findOne({username: this.username, name: this.name})
         if(charExists) return
         
-        const speciesInfo = await species.findOne({name: this.species})
+        const props = await properties.findOne({name: "values"})
+        const speciesInfo = props.species[this.species]
         if(!speciesInfo) {
             console.log("cant find species: ",this.species)
             return

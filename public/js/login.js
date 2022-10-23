@@ -20,7 +20,7 @@ newCharForm.addEventListener('submit', async (e) => {
             token
         })
     })
-    data = data.json()
+    data = await data.json()
     loadCharOptions(data)
     document.getElementById("newCharacterForm").style.display = "none"
     document.getElementById("selectCharForm").style.display = "block"

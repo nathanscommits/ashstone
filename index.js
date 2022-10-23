@@ -45,8 +45,10 @@ app.get('/character/:id/:token', async (req, res) => {
   console.log(character)
   res.render('index', {...req.params, character});
 })
-app.get('/', (req, res) => {
-  res.render('index');
+app.get('/', async (req, res) => {
+  const props = await database.collection("properties").findOne({name: "values"})
+  const species = props.species
+  res.render('index', {species});
 });
 
 // Heres the websocket stuff. All the clients communicate with the server from here.
