@@ -15,7 +15,7 @@ app.use(express.static("public"));
 
 import {database} from './modules/db.js'
 import {processCmd} from './modules/cmds.js'
-import { decrypt, login } from './modules/security.js';
+import { createCharacter, crypt, decrypt, login, register } from './modules/security.js';
 
 app.get('/logout', (req, res) => {
   res.render('logout');
@@ -23,6 +23,28 @@ app.get('/logout', (req, res) => {
 app.get('/register', (req, res) => {
   res.render('register');
 });
+app.post('/register', register)
+app.post('/createcharacter', createCharacter)
+app.post('/login', login)
+app.post('/newtoken', async (req, res) => {
+  const user = {
+    username: req.body.username,
+    name: req.body.name,
+    _id: req.body._id
+  }
+  const userCrypt = await crypt(JSON.stringify(user))
+  res.send({token: userCrypt})
+})
+app.post('/save-note', async (req, res) => {
+  var data = req.body;
+  console.log(data) //expected {text: "textarea input"}
+  res.sendStatus(200)
+})
+app.get('/character/:id/:token', async (req, res) => {
+  const character = await database.collection('characters').findOne({name: req.params.id})
+  console.log(character)
+  res.render('index', {...req.params, character});
+})
 app.get('/', (req, res) => {
   res.render('index');
 });
@@ -31,34 +53,8 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
     console.log('a user connected', socket.id);
 
-    //tries to register the client with a new account
-    socket.on('register', async (usr) => {
-        const player = await database.collection('players').findOne({username: usr.username})
-        player ? io.to(socket.id).emit("err", "User already exists with that name.")
-        : console.log('register: ', usr)
-    })
-
-    //tries to log the client in
-    socket.on('login', async (usr) => {
-        const player = await database.collection('players').findOne({username: usr.username, password: usr.password})
-        if(player) {
-            console.log("login success")
-            const cryptData = await login(player)
-            console.log(cryptData)
-            io.to(socket.id).emit("logInSuccess", cryptData)
-        }  
-        else console.log('failed login')
-
-    })
-    // sends a secure token to the client if they are successful in logging in. This token is used to identify the client for the remainder of their session, in a semi secure way
-    socket.on('loggedIn', async (token) => {
-        const de = await decrypt(token)
-        console.log("decrypted: ", de)
-    })
-
     // This handles client console input
     socket.on('sendCmd', processCmd);
-
 });
 
 

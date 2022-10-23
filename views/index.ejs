@@ -5,24 +5,37 @@
     <link rel="stylesheet" href="/css/style.css">
   </head>
   <body>
-    <div id="console">
+    <div id="login-form">
+        <form id="login" action="">
+          <label>Username: </label> <input id="username" /><br>
+          <label>Password: </label> <input type="password" id="password" /><br>
+          <button>Send</button>
+        </form>
+        <a href="/register">Register</a>
+    </div>
+    <div id="selectCharForm" style="display: none;">
+      <div id="currentCharacterList"></div>
+  </div>
+  <div id="newCharacterForm" style="display: none;">
+      <form id="newCharForm" action="">
+          name:<input id="newCharName" name="name"><br>
+          species:<input id="newCharSpecies" name="species"><br>
+          <button>Create</button>
+      </form>
+      <button onclick="selectChar()">Select Existing Character</button>
+  </div>
+    <div id="console" style="display: none;">
         <ul id="messages"></ul>
         <form id="form" action="">
         <input id="input" autocomplete="off" /><button>Send</button>
         </form>
     </div>
-    <div id="right-panel">
+    <div id="right-panel"  style="display: none;">
         <div id="map-screen">
             <img id="map" src="/img/map1.jpg" alt="">
         </div> 
         <div id="stats"></div>
-        <div id="login-form">
-            <form id="login" action="">
-                <label>Username: </label> <input id="username" /><br>
-                <label>Password: </label> <input type="password" id="password" /><br>
-                <button>Send</button>
-              </form>
-        </div>
+        <a href="/logout">logout</a>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>

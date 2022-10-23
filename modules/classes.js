@@ -1,7 +1,7 @@
 //just a place to dump all the classes. Probably won't be too many
 
 import { database } from "./db.js"
-const characters = database.collection('characteras')
+const characters = database.collection('characters')
 const players = database.collection('players')
 const species = database.collection('species')
 export class Character {
@@ -15,12 +15,17 @@ export class Character {
         this.inventory = inventory
         this.wearing = wearing
         this.money = money
+        this.location = 'map1'
     }
     async add(){
         const charExists = await characters.findOne({username: this.username, name: this.name})
         if(charExists) return
         
         const speciesInfo = await species.findOne({name: this.species})
+        if(!speciesInfo) {
+            console.log("cant find species: ",this.species)
+            return
+        }
         for(const key in speciesInfo.stats) {
             this.stats[key] = this.stats[key] + speciesInfo.stats[key]
         }
@@ -28,7 +33,7 @@ export class Character {
             this.skills[key] = this.skills[key] + speciesInfo.skills[key]
         }
 
-        characters.updateOne({username: this.username, name: this.name}, {$set: this}, {upsert: true})  
+        await characters.updateOne({username: this.username, name: this.name}, {$set: this}, {upsert: true})  
 
     }
 }
