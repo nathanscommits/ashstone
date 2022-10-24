@@ -50,7 +50,7 @@ const commands = {
     'updatemaps': updateMaps,
     'updateitems': updateItems,
     'search': searchMap,
-    'door': modDoor,
+    // 'door': modDoor,
     'say': say,
     'me': say,
 }
