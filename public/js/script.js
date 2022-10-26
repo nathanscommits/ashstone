@@ -12,9 +12,43 @@ form.addEventListener('submit', function(e) {
 e.preventDefault();
 if (input.value) {
     socket.emit('sendCmd', {msg: input.value, token});
+    saveMessageHistory(input.value)
     input.value = '';
 }
 });
+
+const saveMessageHistory = (input) => {
+    let history = JSON.parse(localStorage.getItem('inputHistory'))
+    if(history) {
+        history.push(input)
+        localStorage.setItem('inputHistory', JSON.stringify(history))
+    }
+    else localStorage.setItem('inputHistory', JSON.stringify([input]))
+}
+const loadMessageHistory = (index) => {
+    const arr = JSON.parse(localStorage.getItem('inputHistory')).reverse()
+    if(arr.length <= index) {
+        index = 0
+        historyIndex = 0
+    } else if(index < 0) {
+        index = arr.length - 1
+    }
+    return arr[index]
+}
+
+let historyIndex = 0
+document.addEventListener("keydown", (event) => {
+    if(event.key === 'ArrowUp'){
+        if(input.value === '') historyIndex = 0
+        input.value = loadMessageHistory(historyIndex)   
+        historyIndex++  
+    } else if(event.key === 'ArrowDown') {
+        if(input.value === '') historyIndex = -1
+        input.value = loadMessageHistory(historyIndex)   
+        historyIndex--  
+    }
+});
+
 
 const printToConsole = (text, color) => {
     var item = document.createElement('li');

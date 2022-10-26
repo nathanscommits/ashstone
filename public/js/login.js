@@ -56,11 +56,12 @@ const openSocketsOnLogin = (token) => {
     Skills:\n
     `
     for(const key in skills) {
-        html += `${key}: ${JSON.stringify(skills[key])}\n`
+        if(typeof skills[key].name != undefined && skills[key].value != 0)
+            html += `${skills[key].name}: ${skills[key].value}\n`
     }
     html += `\nStats:\n`
     for(const key in stats) {
-        html += `${key}: ${JSON.stringify(stats[key])}\n`
+        html += `${stats[key].name}: ${stats[key].value}\n`
     }
     console.log(stats, skills, html)
     document.getElementById('stats').innerHTML = html
@@ -73,7 +74,7 @@ const loadChar = async (char) => {
     char = characters.find(c => c.name === char.name)
     localStorage.setItem("character", JSON.stringify(char))
     document.getElementById("selectCharForm").style.display = "none"
-    document.getElementById("console").style.display = "block"
+    document.getElementById("console").style.display = "flex"
     document.getElementById("right-panel").style.display = "block"
     document.getElementById("map").style.display = "block"
     token = await fetch("/newtoken", {

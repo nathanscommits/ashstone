@@ -28,10 +28,10 @@ export class Character {
             return
         }
         for(const key in speciesInfo.stats) {
-            this.stats[key] = this.stats[key] + speciesInfo.stats[key]
+            this.stats[key].value = this.stats[key].value + speciesInfo.stats[key]
         }
         for(const key in speciesInfo.skills) {
-            this.skills[key] = this.skills[key] + speciesInfo.skills[key]
+            this.skills[key].value = this.skills[key].value + speciesInfo.skills[key]
         }
 
         await characters.updateOne({username: this.username, name: this.name}, {$set: this}, {upsert: true})  

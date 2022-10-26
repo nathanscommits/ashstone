@@ -16,9 +16,20 @@ body {
     grid-template-columns: repeat(11, 1fr);
     overflow-wrap: break-word; white-space: pre-line;
 }
+#map {
+    background-image: url('/img/map1.jpg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: grayscale(100%);
+    /* background-color: red; */
+    /* width: 100%; */
+    /* height: calc(100vh - 4rem); */
+    grid-column: 1 / 5;
+}
 #form { 
     background: rgba(0, 0, 0, 0.15); 
-    height: 10%; 
+    height: calc(10vh); 
     /* box-sizing: border-box;  */
     /* grid-row: 11 / 12; */
     position: absolute;
@@ -39,29 +50,26 @@ body {
 }
 #input:focus { outline: none; }
 #form > button { height: 100%; width: 20%; margin: 0; padding: 0; background: #08141e; border: none; outline: none; color: #c3a38a; }
-#map {
-    background-image: url('/img/map1.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    filter: grayscale(100%);
-    /* background-color: red; */
-    /* width: 100%; */
-    /* height: calc(100vh - 4rem); */
-    grid-column: 1 / 5;
-}
 #messages { 
     list-style-type: none;
-     margin: 0; 
+    margin: 0; 
     padding: 0; 
-    /* grid-row: 1 / 11;  */
-    /* height: 2%; 
-    background-color: #816271; */
     width: 100%;
-    position: absolute;
-    bottom: 12%;
+    /* position: absolute;
+    bottom: 12%; */
+    max-height: calc(85vh);
+    margin-bottom: 14vh;
+    /* overflow: scroll; */
+    overflow-y: scroll;
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y proximity;
+    /* display: flex;
+    flex-direction: column-reverse; */
 }
 #messages > li { padding: 0.5rem 1rem; overflow-wrap: break-word; white-space: pre-line;}
+#messages > li:last-child {
+    scroll-snap-align: end;
+}
 #console {
     /* background-color: #08141e;  */
     color: #816271; 
@@ -69,9 +77,10 @@ body {
     grid-column: 5 / 10;
     border-left: 4px solid #997577; 
     border-right: 4px solid #997577; 
-    display: grid;
-    grid-template-rows: repeat(11, 1fr);
     position: relative;
+    overflow:auto; 
+    display:flex; 
+    flex-direction:column-reverse;
 }
 #right-panel{
     grid-column: 10 / 12;

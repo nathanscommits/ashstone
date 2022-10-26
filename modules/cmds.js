@@ -80,7 +80,7 @@ export const processCmd = (details) => {
     const cmd = details.msg.split(" ")[0].substring(1).toLowerCase()
 
     //list of possible direction commands
-    const directions = ['n', 's', 'e', 'w', 'nw', 'ne', 'sw', 'se']
+    const directions = ['n', 's', 'e', 'w', 'nw', 'ne', 'sw', 'se', 'up', 'down', 'left', 'right', 'lighthouse', 'ferry']
 
     //if its a direction command, move to the map, otherwise look in the commands object
     if(directions.includes(cmd)) {
