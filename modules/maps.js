@@ -16,7 +16,10 @@ export const moveTo = async (details) => {
     //figure out location of destination
     const map = await maps.findOne({id: playerDetails.location})
     // console.log(direction, playerDetails.location, map)
-    if(!map.connections[direction]) return
+    if(!map.connections[direction]) {
+        global.io.emit('sysMessage' + details.token, {msg: 'Theres no way through...', color: 'rgb(255,0,0)'})
+        return
+    }
     if(map.locked.includes(direction) || map.adminLocked.includes(direction)) {
         global.io.emit('sysMessage' + details.token, {msg: 'This door is locked!', color: 'rgb(255,255,255)'})
         return
@@ -26,6 +29,10 @@ export const moveTo = async (details) => {
         maps.updateOne({id: playerDetails.location}, {$push: {openDoors: direction}})
         // let oppositeDir =  direction === 'n' ? 's' : direction === 's' ? 'n' : direction === 'e' ? 'w' : 'e'
         let map2 = await maps.findOne({id: map.connections[direction]})
+        if(!"connections" in map2) {
+            global.io.emit('sysMessage' + details.token, {msg: 'Something is preventing you from entering...', color: 'rgb(255,0,0)'})
+            return
+        }
         for(const key in map2.connections){
             if(map2.connections[key] == playerDetails.location) {
                 maps.updateOne({id: map.connections[direction]}, {$push: {openDoors: key}}, {upsert: true})
