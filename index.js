@@ -32,13 +32,13 @@ app.post('/newtoken', async (req, res) => {
     username: req.body.username,
     name: req.body.name,
     _id: req.body._id,
-    socketId: req.body.socketId
+    // socketId: req.body.socketId
   }
 
-  database.collection('characters').updateOne({username: user.username, name: user.name}, {$set: {status: 'online',}, $push:{socketIds: user.socketId}}, {upsert: true})
-
+  database.collection('characters').updateOne({username: user.username, name: user.name}, {$set: {status: 'online',}, $push:{socketIds: req.body.socketId}}, {upsert: true})
   const userCrypt = await crypt(JSON.stringify(user))
   alertNearby({token: userCrypt})
+  updateOnline()
   res.send({token: userCrypt})
 })
 app.post('/save-note', async (req, res) => {
@@ -57,6 +57,13 @@ app.get('/', async (req, res) => {
   res.render('index', {species});
 });
 
+const updateOnline = async () => {
+  let players = await database.collection("characters").find({status: "online"}).toArray()
+  players = players.map(m => m.name)
+  players = "Players Online:\n" + players.join("\n")
+  io.emit('onlinePlayers', players)
+}
+
 // Heres the websocket stuff. All the clients communicate with the server from here.
 io.on('connection', (socket) => {
     console.log('a user connected', socket.id);
@@ -68,7 +75,8 @@ io.on('connection', (socket) => {
       let user = await database.collection("characters").findOne({socketIds: {$in: [socket.id]}})
       if(!user || !("socketIds" in user)) return
       user.socketIds = user.socketIds.flatMap( m => socket.id != m ? m : [])
-      database.collection("characters").updateOne({name: user.name, username: user.username}, {$set: {status: "offline", socketIds: user.socketIds}}, {upsert: true})
+      await database.collection("characters").updateOne({name: user.name, username: user.username}, {$set: {status: "offline", socketIds: user.socketIds}}, {upsert: true})
+      updateOnline()
     })
 });
 

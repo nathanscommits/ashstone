@@ -68,7 +68,7 @@ export const updateSkills = async () => {
     propsCollection.updateOne({name: 'values'}, {$set: {skills: skills}}, {upsert: true})
 }
 export const updateStats = async () => {
-    const st = await readSheet("stats!A:C", spreadsheetId)
+    const st = await readSheet("stats!A:D", spreadsheetId)
     let stats = {}
     st.forEach(s => {
         while(s.length < 4) s.push("")

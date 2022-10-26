@@ -6,6 +6,26 @@ import { modDoor, moveTo, searchMap, lookMap } from './maps.js'
 import { crypt, decrypt } from './security.js'
 import { updateItems, updateMaps, updateSkills, updateSpecies, updateStats } from './sheets.js'
 
+export const whisper = async (details) => {
+    console.log("/w:", details)
+    const user = JSON.parse(decrypt(details.token))
+    const sender = user.name
+    const reciever = details.msg.split(" ")[1]
+
+    let msg = details.msg.split(" ").slice(2).join(" ")
+    let ownmsg = 'You whispered to ' + reciever +': ' + msg
+
+    const recieverDetails = await database.collection("characters").findOne({name: reciever, status: "online"})
+    if(!recieverDetails) {
+        global.io.emit('sysMessage' + details.token, {msg: 'Nobody online matches that name.', color: 'rgb(255,0,0)'})
+        return
+    }
+    const ncrypt = await crypt(JSON.stringify({username: recieverDetails.username, name:recieverDetails.name, _id: recieverDetails._id}))
+    io.emit('say' + details.token, {msg: ownmsg, color: 'rgb(180,180,255)'});
+    console.log(JSON.parse(decrypt(ncrypt)))
+    console.log(JSON.parse(decrypt(details.token)))
+    io.emit('say' + ncrypt, {msg: sender + " whispers: " + msg, color: 'rgb(180,180,255)'});
+}
 export const say = async (details) => {
     const user = JSON.parse(decrypt(details.token))
     const sender = user.name
@@ -64,6 +84,7 @@ const commands = {
     // 'door': modDoor,
     'say': say,
     'me': say,
+    'whisper': whisper,
     'help': help,
 }
 

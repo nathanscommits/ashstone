@@ -41,6 +41,9 @@ const openSocketsOnLogin = (token) => {
     socket.on('say'+token, (data) => {
         printToConsole(data.msg, data.color)
     });
+    socket.on('onlinePlayers', (data) => {
+        document.getElementById('onlinePlayers').innerHTML = data//.join("\n")
+    });
     socket.on("setStats"+token, (m) => {
         const stats = document.getElementById('stats')
         stats.innerHTML = m
