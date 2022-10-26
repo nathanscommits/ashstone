@@ -10,9 +10,9 @@ export const whisper = async (details) => {
     console.log("/w:", details)
     const user = JSON.parse(decrypt(details.token))
     const sender = user.name
-    const reciever = details.msg.split(" ")[1]
+    const reciever = details.msg.split("'")[1]
 
-    let msg = details.msg.split(" ").slice(2).join(" ")
+    let msg = details.msg.split("'").slice(2)[1]
     let ownmsg = 'You whispered to ' + reciever +': ' + msg
 
     const recieverDetails = await database.collection("characters").findOne({name: reciever, status: "online"})
@@ -64,6 +64,7 @@ export const say = async (details) => {
 }
 const help = (details) => {
     const helptext = `
+    [/whisper 'Persons Name' 'Message Here'] Sends a private message to the recepient, can be used from distance.\n
     [/look] to quickly look around the map for items, doors and people\n
     [/search] to search the map for more details, items, doors and people\n
     [/me] to emote something to others on the same map\n
