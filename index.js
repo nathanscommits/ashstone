@@ -31,8 +31,12 @@ app.post('/newtoken', async (req, res) => {
   const user = {
     username: req.body.username,
     name: req.body.name,
-    _id: req.body._id
+    _id: req.body._id,
+    socketId: req.body.socketId
   }
+
+  database.collection('characters').updateOne({username: user.username, name: user.name}, {$set: {status: 'online',}, $push:{socketIds: user.socketId}}, {upsert: true})
+
   const userCrypt = await crypt(JSON.stringify(user))
   alertNearby({token: userCrypt})
   res.send({token: userCrypt})
@@ -59,6 +63,13 @@ io.on('connection', (socket) => {
 
     // This handles client console input
     socket.on('sendCmd', processCmd);
+    socket.on('disconnect', async () => {
+      console.log("Disconnecting: ", socket.id)
+      let user = await database.collection("characters").findOne({socketIds: {$in: [socket.id]}})
+      if(!user || !("socketIds" in user)) return
+      user.socketIds = user.socketIds.flatMap( m => socket.id != m ? m : [])
+      database.collection("characters").updateOne({name: user.name, username: user.username}, {$set: {status: "offline", socketIds: user.socketIds}}, {upsert: true})
+    })
 });
 
 

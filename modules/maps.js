@@ -16,7 +16,7 @@ export const moveTo = async (details) => {
     //figure out location of destination
     const map = await maps.findOne({id: playerDetails.location})
     // console.log(direction, playerDetails.location, map)
-    if(!("connections" in map) || !map.connections[direction]) {
+    if(!map || !("connections" in map) || !map.connections[direction]) {
         global.io.emit('sysMessage' + details.token, {msg: 'Theres no way through...', color: 'rgb(255,0,0)'})
         return
     }
@@ -29,7 +29,7 @@ export const moveTo = async (details) => {
         maps.updateOne({id: playerDetails.location}, {$push: {openDoors: direction}})
         // let oppositeDir =  direction === 'n' ? 's' : direction === 's' ? 'n' : direction === 'e' ? 'w' : 'e'
         let map2 = await maps.findOne({id: map.connections[direction]})
-        if(!("connections" in map2)) {
+        if(!map2 || !("connections" in map2)) {
             global.io.emit('sysMessage' + details.token, {msg: 'Something is preventing you from entering...', color: 'rgb(255,0,0)'})
             return
         }
@@ -54,7 +54,7 @@ export const moveTo = async (details) => {
 export const alertNearby = async (details) => {
     let playerDetails = JSON.parse(decrypt(details.token))
     const player = await database.collection("characters").findOne({name: playerDetails.name, username: playerDetails.username})
-    const nearby = await database.collection("characters").find({location: player.location}).toArray()
+    const nearby = await database.collection("characters").find({location: player.location, status: "online"}).toArray()
 
     nearby.forEach(async n => {
         if(n.name === player.name) return
@@ -64,20 +64,53 @@ export const alertNearby = async (details) => {
     })
 }
 
+export const lookMap = async (details) => {
+    //get location of player
+    let playerDetails = JSON.parse(decrypt(details.token))
+    const player = await characters.findOne({name: playerDetails.name, username: playerDetails.username})
+    playerDetails.location = player.location
+    let [players, map] = await Promise.all([
+        characters.find({location: player.location, status: "online"}).toArray(),
+        maps.findOne({id: playerDetails.location})
+    ])
+    players = players.flatMap(p => p.name != playerDetails.name ? p.name : [])
+    //get map details
+    console.log(players)
+    if(map && "desc" in map) {
+        let message = map.desc.split(".")[0] + '...'
+        if(players.length) {
+            message += ' You can see ' + players.join(", ") + ' are nearby.'
+        }
+        if(map.items.join(", ").length){
+            message += ' You see ' + map.items.join(", ") + ' close by.'
+        }
+        message += 'Theres doors in the following directions [' + Object.keys(map.connections) + ']'
+        global.io.emit('sysMessage' + details.token, {msg: message, color:'rgb(255,255,255)'})
+    } else global.io.emit('sysMessage' + details.token, {msg: 'Error reading sheet info', color:'rgb(255,0,0)'})
+}
 export const searchMap = async (details) => {
     //get location of player
     let playerDetails = JSON.parse(decrypt(details.token))
     const player = await characters.findOne({name: playerDetails.name, username: playerDetails.username})
     playerDetails.location = player.location
     let [players, map] = await Promise.all([
-        characters.find({location: player.location}).toArray(),
+        characters.find({location: player.location, status: "online"}).toArray(),
         maps.findOne({id: playerDetails.location})
     ])
-    players = players.map(p => p.name)
+    players = players.flatMap(p => p.name != playerDetails.name ? p.name : [])
     //get map details
     console.log(players)
-    if("desc" in map) global.io.emit('sysMessage' + details.token, {msg: map.desc + ' You can see ' + players + " as well as " + map.items + ". You see a door " + Object.keys(map.connections) + " of you.", color:'rgb(255,255,255)'})
-    else global.io.emit('sysMessage' + details.token, {msg: 'Error reading sheet info', color:'rgb(255,0,0)'})
+    if(map && "desc" in map) {
+        let message = map.desc
+        if(players.length) {
+            message += ' You can see ' + players.join(", ") + ' are nearby.'
+        }
+        if(map.items.join(", ").length){
+            message += ' You see ' + map.items.join(", ") + ' close by.'
+        }
+        message += 'Theres doors in the following directions [' + Object.keys(map.connections) + ']'
+        global.io.emit('sysMessage' + details.token, {msg: message, color:'rgb(255,255,255)'})
+    } else global.io.emit('sysMessage' + details.token, {msg: 'Error reading sheet info', color:'rgb(255,0,0)'})
 }
 
 //modify a doors status (open/closed/locked)

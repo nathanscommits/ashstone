@@ -2,7 +2,7 @@
 
 import { Character } from './classes.js'
 import { database } from './db.js'
-import { modDoor, moveTo, searchMap } from './maps.js'
+import { modDoor, moveTo, searchMap, lookMap } from './maps.js'
 import { crypt, decrypt } from './security.js'
 import { updateItems, updateMaps, updateSkills, updateSpecies, updateStats } from './sheets.js'
 
@@ -30,7 +30,7 @@ export const say = async (details) => {
     const char = await database.collection('characters').findOne({name: user.name})
     // console.log("found char: ", char)
     if(!char) return
-    const nearby = await database.collection('characters').find({location: char.location}).toArray()
+    const nearby = await database.collection('characters').find({location: char.location, status: "online"}).toArray()
     nearby.forEach(async n => {
         if(n.name === user.name) {
             io.emit('say' + details.token, {msg: ownmsg, color: 'rgb(180,180,180)'});
@@ -44,7 +44,8 @@ export const say = async (details) => {
 }
 const help = (details) => {
     const helptext = `
-    [/look] to look around the map for items, doors and people\n
+    [/look] to quickly look around the map for items, doors and people\n
+    [/search] to search the map for more details, items, doors and people\n
     [/me] to emote something to others on the same map\n
     [/direction] to move to another map use / followed by the doors name, example: [/n] to move through the north door\n
     `
@@ -58,7 +59,8 @@ const commands = {
     'updatespecies': updateSpecies,
     'updatemaps': updateMaps,
     'updateitems': updateItems,
-    'look': searchMap,
+    'look': lookMap,
+    'search': searchMap,
     // 'door': modDoor,
     'say': say,
     'me': say,

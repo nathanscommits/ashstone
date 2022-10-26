@@ -83,7 +83,7 @@ const loadChar = async (char) => {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }, 
-        body: JSON.stringify(char)
+        body: JSON.stringify({...char, socketId: socket.id})
     })
     token = await token.json()
     token = token.token
