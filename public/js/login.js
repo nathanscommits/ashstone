@@ -32,7 +32,8 @@ const openSocketsOnLogin = (token) => {
         console.log("new map triggered")
         // token = details.token
         // localStorage.setItem("token", token)
-        document.getElementById('map').src = 'img/' + details.map + '.jpg'
+        document.getElementById('map').style.backgroundImage = `url('img/${details.map}.jpg')`
+        document.getElementById('map').innerHTML = `${details.map}`
     })
     socket.on('sysMessage' + token, (details) => {
         printToConsole(details.msg, details.color)
@@ -44,6 +45,27 @@ const openSocketsOnLogin = (token) => {
         const stats = document.getElementById('stats')
         stats.innerHTML = m
     })
+    const char = JSON.parse(localStorage.getItem('character'))
+    const stats = char.stats
+    const skills = char.skills
+    let html = `
+    Name: ${char.name}\n
+    Money: ${char.money}\n
+    Species: ${char.species}\n
+    Location: ${char.location}\n\n
+    Skills:\n
+    `
+    for(const key in skills) {
+        html += `${key}: ${JSON.stringify(skills[key])}\n`
+    }
+    html += `\nStats:\n`
+    for(const key in stats) {
+        html += `${key}: ${JSON.stringify(stats[key])}\n`
+    }
+    console.log(stats, skills, html)
+    document.getElementById('stats').innerHTML = html
+    document.getElementById('map').style.backgroundImage = `url('img/${char.location}.jpg')`
+    document.getElementById('map').innerHTML = `${char.location}`
 }
 
 const loadChar = async (char) => {
@@ -53,6 +75,7 @@ const loadChar = async (char) => {
     document.getElementById("selectCharForm").style.display = "none"
     document.getElementById("console").style.display = "block"
     document.getElementById("right-panel").style.display = "block"
+    document.getElementById("map").style.display = "block"
     token = await fetch("/newtoken", {
         method: 'POST', 
         headers: {

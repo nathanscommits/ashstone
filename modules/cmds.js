@@ -42,6 +42,15 @@ export const say = async (details) => {
         
     })
 }
+const help = (details) => {
+    const helptext = `
+    [/look] to look around the map for items, doors and people\n
+    [/me] to emote something to others on the same map\n
+    [/direction] to move to another map use / followed by the doors name, example: [/n] to move through the north door\n
+    `
+    // [/door operation direction] operations are [open] [close], directions are the name of the door in question, example: [n] for the north door. So example command is [/door open n] to open the north door\n
+    io.emit('say' + details.token, {msg: helptext, color: 'rgb(150,150,150)'});
+}
 // this object houses all the command functions
 const commands = {
     'updateskills': updateSkills,
@@ -49,11 +58,13 @@ const commands = {
     'updatespecies': updateSpecies,
     'updatemaps': updateMaps,
     'updateitems': updateItems,
-    'search': searchMap,
+    'look': searchMap,
     // 'door': modDoor,
     'say': say,
     'me': say,
+    'help': help,
 }
+
 
 
 // processCmd is the main router for commands from the client.
@@ -69,7 +80,7 @@ export const processCmd = (details) => {
     const cmd = details.msg.split(" ")[0].substring(1).toLowerCase()
 
     //list of possible direction commands
-    const directions = ['n', 's', 'e', 'w']
+    const directions = ['n', 's', 'e', 'w', 'nw', 'ne', 'sw', 'se']
 
     //if its a direction command, move to the map, otherwise look in the commands object
     if(directions.includes(cmd)) {
@@ -77,6 +88,8 @@ export const processCmd = (details) => {
         moveTo(details)
     } else if(Object.keys(commands).includes(cmd)) {
         commands[cmd](details)
+    } else {
+        io.emit('say' + details.token, {msg: 'That command was not found. Type /help for a list of valid commands.', color: 'rgb(255,0,0)'});
     }
 }
 

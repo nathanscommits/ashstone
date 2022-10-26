@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="/css/style.css">
   </head>
   <body>
-    <div id="login-form">
+    <div id="login-form" style="display: block;">
         <form id="login" action="">
           <label>Username: </label> <input id="username" /><br>
           <label>Password: </label> <input type="password" id="password" /><br>
@@ -15,40 +15,29 @@
     </div>
     <div id="selectCharForm" style="display: none;">
       <div id="currentCharacterList"></div>
-  </div>
-  <div id="newCharacterForm" style="display: none;">
-      <form id="newCharForm" action="">
-          name:<input id="newCharName" name="name"><br>
-          species: <select id="newCharSpecies" name="species">
-            <% for(const key in species) { %>
-              <option value="<%= key %>"><%= key %></option>
-            <% } %>
-            </select><br>
-          <button>Create</button>
-      </form>
-      <button onclick="selectChar()">Select Existing Character</button>
-  </div>
-    <div id="console" style="display: none;">
+    </div>
+    <div id="newCharacterForm" style="display: none;">
+        <form id="newCharForm" action="">
+            name:<input id="newCharName" name="name"><br>
+            species: <select id="newCharSpecies" name="species">
+              <% for(const key in species) { %>
+                <option value="<%= key %>"><%= key %></option>
+              <% } %>
+              </select><br>
+            <button>Create</button>
+        </form>
+        <button onclick="selectChar()">Select Existing Character</button>
+      </div>
+      <div id="map" style="display: none;"></div>
+      <div id="console" style="display: none;">
         <ul id="messages"></ul>
         <form id="form" action="">
         <input id="input" autocomplete="off" /><button>Send</button>
         </form>
     </div>
     <div id="right-panel"  style="display: none;">
-        <div id="map-screen">
-            <img id="map" src="/img/map1.jpg" alt="">
-        </div> 
-        <div id="stats"></div>
         <a href="/logout">logout</a>
-        <div id="availableCommands">
-          <h3>Available Commands:</h3>
-          <ul>
-            <li>[/search] to search the map for items, doors and people</li>
-            <li>[/me] to emote something to others on the same map</li>
-            <li>[/direction] to move to another map use / followed by the doors name, example: [/n] to move through the north door</li>
-            <li>[/door operation direction] operations are [open] [close], directions are the name of the door in question, example: [n] for the north door. So example command is [/door open n] to open the north door</li>
-          </ul>
-        </div>
+        <div id="stats"></div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>

@@ -55,8 +55,10 @@ export class Inventory {
     remove(){
         //only remove quant and not all
 
-        //remove
+        //or remove all
         characters.updateOne({name: this.uid}, {$pull: {inventory: this}}, {upsert: true})
+
+        //or remove one
     }
 
     //wearables
