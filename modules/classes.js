@@ -30,10 +30,12 @@ export class Character {
         if(!Object.keys(speciesInfo.stats).length) return
         if(!Object.keys(speciesInfo.skills).length) return
         for(const key in speciesInfo.stats) {
-            this.stats[key].value = this.stats[key].value + speciesInfo.stats[key]
+            if(key in this.stats && "value" in this.stats[key])
+                this.stats[key].value = this.stats[key].value + speciesInfo.stats[key]
         }
         for(const key in speciesInfo.skills) {
-            this.skills[key].value = this.skills[key].value + speciesInfo.skills[key]
+            if(key in this.skills && "value" in this.skills[key])
+                this.skills[key].value = this.skills[key].value + speciesInfo.skills[key]
         }
 
         await characters.updateOne({username: this.username, name: this.name}, {$set: this}, {upsert: true})  

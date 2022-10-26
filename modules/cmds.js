@@ -64,7 +64,7 @@ export const say = async (details) => {
 }
 const help = (details) => {
     const helptext = `
-    [/whisper 'Persons Name' 'Message Here'] Sends a private message to the recepient, can be used from distance.\n
+    [/whisper 'Persons Name' 'Message Here'] Sends a private message to the recepient, can be used from distance. Don't forget the ' marks!\n
     [/look] to quickly look around the map for items, doors and people\n
     [/search] to search the map for more details, items, doors and people\n
     [/me] to emote something to others on the same map\n
