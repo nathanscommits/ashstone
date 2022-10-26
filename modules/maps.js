@@ -16,7 +16,7 @@ export const moveTo = async (details) => {
     //figure out location of destination
     const map = await maps.findOne({id: playerDetails.location})
     // console.log(direction, playerDetails.location, map)
-    if(!map.connections[direction]) {
+    if(!("connections" in map) || !map.connections[direction]) {
         global.io.emit('sysMessage' + details.token, {msg: 'Theres no way through...', color: 'rgb(255,0,0)'})
         return
     }
