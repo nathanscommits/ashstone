@@ -27,6 +27,8 @@ export class Character {
             console.log("cant find species: ",this.species)
             return
         }
+        if(!Object.keys(speciesInfo.stats).length) return
+        if(!Object.keys(speciesInfo.skills).length) return
         for(const key in speciesInfo.stats) {
             this.stats[key].value = this.stats[key].value + speciesInfo.stats[key]
         }
