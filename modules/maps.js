@@ -76,7 +76,8 @@ export const searchMap = async (details) => {
     players = players.map(p => p.name)
     //get map details
     console.log(players)
-    global.io.emit('sysMessage' + details.token, {msg: map.desc + ' You can see ' + players + " as well as " + map.items + ". You see a door " + Object.keys(map.connections) + " of you.", color:'rgb(255,255,255)'})
+    if("desc" in map) global.io.emit('sysMessage' + details.token, {msg: map.desc + ' You can see ' + players + " as well as " + map.items + ". You see a door " + Object.keys(map.connections) + " of you.", color:'rgb(255,255,255)'})
+    else global.io.emit('sysMessage' + details.token, {msg: 'Error reading sheet info', color:'rgb(255,0,0)'})
 }
 
 //modify a doors status (open/closed/locked)
