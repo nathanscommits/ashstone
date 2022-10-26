@@ -29,7 +29,7 @@ export const moveTo = async (details) => {
         maps.updateOne({id: playerDetails.location}, {$push: {openDoors: direction}})
         // let oppositeDir =  direction === 'n' ? 's' : direction === 's' ? 'n' : direction === 'e' ? 'w' : 'e'
         let map2 = await maps.findOne({id: map.connections[direction]})
-        if(!"connections" in map2) {
+        if(!("connections" in map2)) {
             global.io.emit('sysMessage' + details.token, {msg: 'Something is preventing you from entering...', color: 'rgb(255,0,0)'})
             return
         }
