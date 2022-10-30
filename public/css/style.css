@@ -87,10 +87,31 @@ body {
     padding: 1rem;
     overflow: scroll;
     max-height: calc(100vh - 7rem);
+    overflow-x: hidden;
 }
 a {
     color: #816271;
 }
+
+/* width */
+::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #c3a38a ;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #997577;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #816271;
+  }
 /* #login {width: 100%; justify-content: center; margin: 2rem auto; padding: 0.5rem;} */
 /* #login * {display: block; margin: auto;} */
 /* #messages > li:nth-child(odd) { background: #efefef; } */
