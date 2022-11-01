@@ -16,6 +16,37 @@ body {
     grid-template-columns: repeat(11, 1fr);
     overflow-wrap: break-word; white-space: pre-line;
 }
+#login-form, #register-form, #selectCharForm {
+    padding: 2rem;
+}
+.btn, form button {
+	background: #997577;
+	border-bottom: 0.3rem inset rgba(0,0,0,.5);
+	border-left: 0.3rem inset rgba(0,0,0,.5);
+	border-right: 0.3rem inset rgba(255,255,255,.5);
+	border-top: 0.3rem inset rgba(255,255,255,.5);
+	box-sizing: border-box;
+	color: #08141e;
+	cursor: pointer;
+	display: inline-block;
+	font-size: 1.5rem;
+	margin: .2rem;
+	min-width: 200px;
+	padding: .2rem;
+	text-transform: uppercase;
+	width: auto;
+    font-family: perfectdos; 
+}
+
+input {
+    min-width: 200px;
+    padding: .75rem;
+}
+
+.btn:hover, .btn:focus {
+    background: #BCBCBC;
+}
+
 hr {
     background-color: #997577;
     color: #997577;

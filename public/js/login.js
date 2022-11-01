@@ -150,9 +150,9 @@ const loadCharOptions = (data) => {
                 username: c.username,
                 _id: c._id
             }
-            currentChars += `<button onclick='loadChar(${JSON.stringify(charObj)})'>${c.name}</button><br>`
+            currentChars += `<button class='btn' onclick='loadChar(${JSON.stringify(charObj)})'>${c.name}</button><br>`
         })
-        currentChars += `<br><button onclick='createChar()'>Create New Character</button><br>`
+        currentChars += `<br><button class='btn' onclick='createChar()'>Create New Character</button><br>`
         document.getElementById("currentCharacterList").innerHTML = currentChars
     }
 }
