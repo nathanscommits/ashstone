@@ -52,6 +52,7 @@ const openSocketsOnLogin = (token) => {
     })
     const char = JSON.parse(localStorage.getItem('character'))
     setStats(char)
+    printToConsole('Type /help for a list of commands', 'rgb(150,150,150)')
     document.getElementById('map').style.backgroundImage = `url('img/${char.location}.jpg')`
     document.getElementById('map').innerHTML = `${char.location}`
 }

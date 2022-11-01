@@ -16,7 +16,7 @@ app.use(express.static("public"));
 import {database} from './modules/db.js'
 import {processCmd} from './modules/cmds.js'
 import { createCharacter, crypt, decrypt, login, register } from './modules/security.js';
-import { alertNearby } from './modules/maps.js';
+import { alertNearby, lookMap } from './modules/maps.js';
 
 app.get('/logout', (req, res) => {
   res.render('logout');
@@ -39,6 +39,7 @@ app.post('/newtoken', async (req, res) => {
   const userCrypt = await crypt(JSON.stringify(user))
   alertNearby({token: userCrypt})
   updateOnline()
+  lookMap({token: userCrypt})
   res.send({token: userCrypt})
 })
 app.post('/save-note', async (req, res) => {
