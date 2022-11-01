@@ -43,7 +43,7 @@ export const moveTo = async (details) => {
         global.io.emit('sysMessage' + details.token, {msg: 'You walk through the open door.', color: 'rgb(255,255,255)'})
     }
     //move player to destination
-    characters.updateOne({name: playerDetails.name, username: playerDetails.username}, {$set: {location: map.connections[direction]}}, {upsert: true})
+    await characters.updateOne({name: playerDetails.name, username: playerDetails.username}, {$set: {location: map.connections[direction]}}, {upsert: true})
     //update map image for player
     
     global.io.emit('newMap' + details.token, {map: map.connections[direction]})
