@@ -47,7 +47,7 @@ export const moveTo = async (details) => {
     //update map image for player
     
     global.io.emit('newMap' + details.token, {map: map.connections[direction]})
-    searchMap(details)
+    lookMap(details)
     alertNearby(details)
 }
 
@@ -79,12 +79,13 @@ export const lookMap = async (details) => {
     if(map && "desc" in map) {
         let message = map.desc.split(".")[0] + '...'
         if(players.length) {
-            message += ' You can see ' + players.join(", ") + ' are nearby.'
+            message += ' People: [' + players.join() + '].'
         }
-        if(map.items.join(", ").length){
-            message += ' You see ' + map.items.join(", ") + ' close by.'
+        if(map.inventory.length){
+            const items = map.inventory.map( m => m.name)
+            message += ' Items: [' + items.join() + '].'
         }
-        message += 'Theres doors in the following directions [' + Object.keys(map.connections) + ']'
+        message += ' Exits: [' + Object.keys(map.connections) + ']'
         global.io.emit('sysMessage' + details.token, {msg: message, color:'rgb(255,255,255)'})
     } else global.io.emit('sysMessage' + details.token, {msg: 'Error reading sheet info', color:'rgb(255,0,0)'})
 }
@@ -103,12 +104,13 @@ export const searchMap = async (details) => {
     if(map && "desc" in map) {
         let message = map.desc
         if(players.length) {
-            message += ' You can see ' + players.join(", ") + ' are nearby.'
+            message += ' People: [' + players.join() + '].'
         }
-        if(map.items.join(", ").length){
-            message += ' You see ' + map.items.join(", ") + ' close by.'
+        if(map.inventory.length){
+            const items = map.inventory.map( m => m.name)
+            message += ' Items: [' + items.join() + '].'
         }
-        message += 'Theres doors in the following directions [' + Object.keys(map.connections) + ']'
+        message += ' Exits: [' + Object.keys(map.connections) + ']'
         global.io.emit('sysMessage' + details.token, {msg: message, color:'rgb(255,255,255)'})
     } else global.io.emit('sysMessage' + details.token, {msg: 'Error reading sheet info', color:'rgb(255,0,0)'})
 }

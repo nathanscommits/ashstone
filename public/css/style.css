@@ -16,6 +16,11 @@ body {
     grid-template-columns: repeat(11, 1fr);
     overflow-wrap: break-word; white-space: pre-line;
 }
+hr {
+    background-color: #997577;
+    color: #997577;
+    border-color: #997577;
+}
 #map {
     background-image: url('/img/map1.jpg');
     background-size: contain;

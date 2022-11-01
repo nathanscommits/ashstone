@@ -41,35 +41,46 @@ const openSocketsOnLogin = (token) => {
     socket.on('say'+token, (data) => {
         printToConsole(data.msg, data.color)
     });
+    socket.on('redirect'+token, (data) => {
+        window.location.replace(data.url);
+    });
     socket.on('onlinePlayers', (data) => {
         document.getElementById('onlinePlayers').innerHTML = data//.join("\n")
     });
     socket.on("setStats"+token, (m) => {
-        const stats = document.getElementById('stats')
-        stats.innerHTML = m
+        setStats(m)
     })
     const char = JSON.parse(localStorage.getItem('character'))
+    setStats(char)
+    document.getElementById('map').style.backgroundImage = `url('img/${char.location}.jpg')`
+    document.getElementById('map').innerHTML = `${char.location}`
+}
+
+const setStats = (char) => {
     const stats = char.stats
     const skills = char.skills
+    const inventory = char.inventory
     let html = `
     Name: ${char.name}\n
     Money: ${char.money}\n
     Species: ${char.species}\n
-    Location: ${char.location}\n\n
+    Location: ${char.location}\n<hr>\n
     Skills:\n
     `
     for(const key in skills) {
         if(typeof skills[key].name != undefined && skills[key].value != 0)
             html += `${skills[key].name}: ${skills[key].value}\n`
     }
-    html += `\nStats:\n`
+    html += `<hr>\nStats:\n\n`
     for(const key in stats) {
         html += `${stats[key].name}: ${stats[key].value}\n`
     }
-    console.log(stats, skills, html)
+    html += `<hr>\nInventory:\n\n`
+    for(const key in inventory) {
+        html += `x${inventory[key].quant} ${inventory[key].name}\n`
+    }
+    html += '<hr>'
     document.getElementById('stats').innerHTML = html
-    document.getElementById('map').style.backgroundImage = `url('img/${char.location}.jpg')`
-    document.getElementById('map').innerHTML = `${char.location}`
 }
 
 const loadChar = async (char) => {

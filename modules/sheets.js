@@ -107,9 +107,11 @@ export const updateSpecies = async () => {
     propsCollection.updateOne({name: 'values'}, {$set: {species: stats}}, {upsert: true})
 }
 export const updateMaps = async () => {
-    const st = await readSheet("maps!A:K", spreadsheetId)
-    st.forEach(s => {
-        while(s.length < 11) s.push("")
+    await mapsCollection.deleteMany({})
+    const st = await readSheet("maps!A:N", spreadsheetId)
+    const allItems = await itemsCollection.find().toArray()
+    st.forEach(async (s) => {
+        while(s.length < 13) s.push("")
         let maps = {}
         maps.id = s[0]
         maps.name = s[1]
@@ -118,7 +120,22 @@ export const updateMaps = async () => {
             const b = j.split(":").map( l => l.trim())
             maps.connections[b[0]] = b[1]
         })
-        maps.items = s[3].split(",").map(m => m.trim())
+        const items = s[3].split(",").map(m => m.trim())
+        maps.inventory = []
+        items.forEach(async (i) => {
+            if(i != "") {
+                const found = maps.inventory.findIndex((f) => f.id == i)
+                if(found >= 0) {
+                    maps.inventory[found].quant += 1
+                } else {
+                    const iData = allItems.find(f => f.id == i)
+                    console.log(i)
+                    if(iData) maps.inventory.push({...iData, quant: 1})
+                }
+            }
+        })
+        maps.inventorySize = parseInt(s[12])
+        if(!maps.inventorySize) maps.inventorySize = 1000
         maps.modifiers = {}
         s[4].split(",").map(m => m.trim()).forEach(j => { 
             const b = j.split(":").map( l => l.trim())
@@ -130,6 +147,7 @@ export const updateMaps = async () => {
         maps.openDoors = s[8].split(",").map(m => m.trim())
         maps.adminLocked = s[9].split(",").map(m => m.trim())
         maps.barredDoors = s[10].split(",").map(m => m.trim())
+        maps.neighborhood = s[11]
       
         mapsCollection.updateOne({id: maps.id}, {$set: maps}, {upsert: true})
     })
@@ -141,12 +159,13 @@ export const updateItems = async () => {
     const st = await readSheet("items!A:AK", spreadsheetId)
     // objectID	Object Name (Display)	Description	Hidden Amount (value to beat)	Takable	Take Message	Sittable	Sit Message	Sellable	Value	Sell Message	Destroyable	Destroy Message	Tradable	Trade Message	Throwable	Throw Damage	Throw Message	Wearable	Wearable Bonus	Wear Message	Consumable	Consuming Bonus	Consume Message	Placable	Place Message	Appraisal Type	Crafting Ingredients	Crafting skill										
     st.forEach(s => {
-        while(s.length < 37) s.push("")
+        while(s.length < 38) s.push("")
         let items = {
             id: s[0],
             name: s[1],
             desc: s[2],
         }
+        items.type = s[37]
         items.keyFor = {}
         s[36].split(";").map(m => m.trim()).forEach(j => { 
             const b = j.split(":").map( l => l.trim())

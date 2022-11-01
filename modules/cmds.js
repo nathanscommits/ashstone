@@ -5,6 +5,11 @@ import { database } from './db.js'
 import { modDoor, moveTo, searchMap, lookMap } from './maps.js'
 import { crypt, decrypt } from './security.js'
 import { updateItems, updateMaps, updateSkills, updateSpecies, updateStats } from './sheets.js'
+import { pickup, drop } from './inventory.js'
+
+export const disconnect = async (details) => {
+    io.emit('redirect' + details.token, {url: '/logout'});
+}
 
 export const whisper = async (details) => {
     console.log("/w:", details)
@@ -68,7 +73,10 @@ const help = (details) => {
     [/look] to quickly look around the map for items, doors and people\n
     [/search] to search the map for more details, items, doors and people\n
     [/me] to emote something to others on the same map\n
+    [/pickup 'Item Name' 1] Pick something up from the map, the 1 is the quantity of items to pick up. Don't forget the '' quotes!\n
+    [/drop 'Item Name' 1] Drop something from your inventory to the map, the 1 is the quantity of items to drop. Don't forget the '' quotes!\n
     [/direction] to move to another map use / followed by the doors name, example: [/n] to move through the north door\n
+    [/disconnect /quit /logout] Ends your session.\n
     `
     // [/door operation direction] operations are [open] [close], directions are the name of the door in question, example: [n] for the north door. So example command is [/door open n] to open the north door\n
     io.emit('say' + details.token, {msg: helptext, color: 'rgb(150,150,150)'});
@@ -87,6 +95,11 @@ const commands = {
     'me': say,
     'whisper': whisper,
     'help': help,
+    'disconnect': disconnect,
+    'quit': disconnect,
+    'logout': disconnect,
+    'pickup': pickup,
+    'drop': drop
 }
 
 
