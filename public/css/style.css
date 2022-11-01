@@ -19,7 +19,7 @@ body {
 #login-form, #register-form, #selectCharForm {
     padding: 2rem;
 }
-.btn, form button {
+.btn {
 	background: #997577;
 	border-bottom: 0.3rem inset rgba(0,0,0,.5);
 	border-left: 0.3rem inset rgba(0,0,0,.5);
