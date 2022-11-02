@@ -11,7 +11,10 @@ const items = database.collection('items')
 export const pickup = async (details) => {
     const decrypted = JSON.parse(decrypt(details.token))
     const cmdLine = details.msg.split("'")
-    if(cmdLine < 2) return `Specify the items name between single quotation makes.`
+    if(cmdLine.length < 2) {
+        io.emit('sysMessage' + details.token, {msg: `Specify the items name between single quotation marks 'like this'.`, color: 'rgb(180,180,180)'});
+        return 
+    }
     const user = await characters.findOne({name: decrypted.name})
     const cmd = {
         item: cmdLine[1].trim().toLowerCase(),
@@ -42,7 +45,10 @@ export const pickup = async (details) => {
 export const drop = async (details) => {
     const decrypted = JSON.parse(decrypt(details.token))
     const cmdLine = details.msg.split("'")
-    if(cmdLine < 2) return `Specify the items name between single quotation makes.`
+    if(cmdLine.length < 2) {
+        io.emit('sysMessage' + details.token, {msg: `Specify the items name between single quotation marks 'like this'.`, color: 'rgb(180,180,180)'});
+        return 
+    }
     const user = await characters.findOne({name: decrypted.name})
     const cmd = {
         item: cmdLine[1].trim().toLowerCase(),
