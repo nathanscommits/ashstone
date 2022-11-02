@@ -55,7 +55,8 @@ const printToConsole = (text, color) => {
     item.textContent = text
     item.style.color = color
     messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
+    var mess = document.getElementById('messages')
+    mess.scrollTop = mess.scrollHeight;
 }
 
 // socket.on("logInSuccess", (m) => {
