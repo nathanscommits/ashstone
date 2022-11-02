@@ -74,7 +74,7 @@ const help = (details) => {
     [/search] to search the map for more details, items, doors and people\n
     [/me] to emote something to others on the same map\n
     [/pickup 'Item Name' 1] Pick something up from the map, the 1 is the quantity of items to pick up. Don't forget the '' quotes!\n
-    [/drop 'Item Name' 1] Drop something from your inventory to the map, the 1 is the quantity of items to drop. Don't forget the '' quotes!\n
+    [/drop 'Item Name' 1] Drop something from your inventory to the map, the 1 is the quantity of items to drop. Don't forget the 'quotes!'\n
     [/direction] to move to another map use / followed by the doors name, example: [/n] to move through the north door\n
     [/disconnect /quit /logout] Ends your session.\n
     \n

@@ -95,6 +95,10 @@ export const adminSpawnItem = async (details) => {
         return i;
     })
     const itemInfo = await items.findOne({id: item})
+    if(!itemInfo) {
+        io.emit('sysMessage' + details.token, {msg: "Theres no item like that.", color: 'rgb(255,0,0)'});
+        return
+    }
     if(!found) {
         map.inventory.push({...itemInfo, quant: quant})
     }
