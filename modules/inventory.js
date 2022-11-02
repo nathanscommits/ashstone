@@ -11,6 +11,7 @@ const items = database.collection('items')
 export const pickup = async (details) => {
     const decrypted = JSON.parse(decrypt(details.token))
     const cmdLine = details.msg.split("'")
+    if(cmdLine < 2) return `Specify the items name between single quotation makes.`
     const user = await characters.findOne({name: decrypted.name})
     const cmd = {
         item: cmdLine[1].trim().toLowerCase(),
@@ -41,6 +42,7 @@ export const pickup = async (details) => {
 export const drop = async (details) => {
     const decrypted = JSON.parse(decrypt(details.token))
     const cmdLine = details.msg.split("'")
+    if(cmdLine < 2) return `Specify the items name between single quotation makes.`
     const user = await characters.findOne({name: decrypted.name})
     const cmd = {
         item: cmdLine[1].trim().toLowerCase(),
@@ -69,4 +71,37 @@ export const drop = async (details) => {
     io.emit('sysMessage' + details.token, {msg: result, color: 'rgb(180,180,180)'});
     const updatedChar = await characters.findOne({name: decrypted.name})
     io.emit('setStats' + details.token, updatedChar);
+}
+export const adminSpawnItem = async (details) => {
+    const cmdArr = details.msg.split(" ")
+    if(cmdArr.length < 2) return
+    let item = cmdArr[1].trim()
+    const userDetails = JSON.parse(decrypt(details.token))
+    let player = await characters.findOne({name: userDetails.name, username: userDetails.username})
+    let map = await maps.findOne({id: player.location})
+    let found = false;
+    const quant = 1
+    map.inventory.map(i => {
+        if(i.id == item) {
+            i.quant += quant
+            found = true;
+        }
+        return i;
+    })
+    const itemInfo = await items.findOne({id: item})
+    if(!found) {
+        map.inventory.push({...itemInfo, quant: quant})
+    }
+
+    if(!("inventorySize" in map)) map.inventorySize = 1000;
+        const newSpace = map.inventorySize - (itemInfo.takesUpSpace * quant)
+        if(newSpace < 0) {
+            io.emit('sysMessage' + details.token, {msg: "It's too heavy to put down there.", color: 'rgb(255,0,0)'});
+            return
+        }
+
+    //add item to DB
+    //console.log(this.foreign.inventory)
+    await maps.updateOne({id: map.id}, {$set: {inventory: map.inventory, inventorySize: newSpace}}, {upsert: true})
+    io.emit('sysMessage' + details.token, {msg: `Item spawned: ${item}.`, color: 'rgb(255,0,0)'});
 }

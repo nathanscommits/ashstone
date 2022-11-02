@@ -2,10 +2,10 @@
 
 import { Character } from './classes.js'
 import { database } from './db.js'
-import { modDoor, moveTo, searchMap, lookMap } from './maps.js'
+import { modDoor, moveTo, searchMap, lookMap, adminGoTo } from './maps.js'
 import { crypt, decrypt } from './security.js'
 import { updateItems, updateMaps, updateSkills, updateSpecies, updateStats } from './sheets.js'
-import { pickup, drop } from './inventory.js'
+import { pickup, drop, adminSpawnItem } from './inventory.js'
 
 export const disconnect = async (details) => {
     io.emit('redirect' + details.token, {url: '/logout'});
@@ -77,6 +77,9 @@ const help = (details) => {
     [/drop 'Item Name' 1] Drop something from your inventory to the map, the 1 is the quantity of items to drop. Don't forget the '' quotes!\n
     [/direction] to move to another map use / followed by the doors name, example: [/n] to move through the north door\n
     [/disconnect /quit /logout] Ends your session.\n
+    \n
+    [/goto mapId] This admin command allows you to teleport right to the given mapId\n
+    [/spawn itemId] This admin command allows you to create an item out of thin air at your location\n
     `
     // [/door operation direction] operations are [open] [close], directions are the name of the door in question, example: [n] for the north door. So example command is [/door open n] to open the north door\n
     io.emit('say' + details.token, {msg: helptext, color: 'rgb(150,150,150)'});
@@ -99,7 +102,9 @@ const commands = {
     'quit': disconnect,
     'logout': disconnect,
     'pickup': pickup,
-    'drop': drop
+    'drop': drop,
+    'goto': adminGoTo,
+    'spawn': adminSpawnItem,
 }
 
 

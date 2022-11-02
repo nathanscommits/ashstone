@@ -51,6 +51,19 @@ export const moveTo = async (details) => {
     alertNearby(details)
 }
 
+export const adminGoTo  = async (details) => {
+    const userDetails = JSON.parse(decrypt(details.token))
+    const cmdArr = details.msg.split(" ")
+    if(cmdArr.length < 2) return
+    const mapId = cmdArr[1].trim()
+    const newMap = await database.collection('maps').findOne({id: mapId})
+    if(!newMap) return
+    await characters.updateOne({name: userDetails.name, username: userDetails.username}, {$set: {location: mapId}}, {upsert: true})
+    global.io.emit('newMap' + details.token, {map: mapId})
+    lookMap(details)
+    alertNearby(details)
+}
+
 export const alertNearby = async (details) => {
     let playerDetails = JSON.parse(decrypt(details.token))
     const player = await database.collection("characters").findOne({name: playerDetails.name, username: playerDetails.username})
