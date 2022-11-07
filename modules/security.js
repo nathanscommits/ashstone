@@ -31,8 +31,12 @@ export const decrypt = (encoded) => {
 export const login = async (req, res) => {
     // load characters
     const user = req.body
-    const characterList = await characters.find({username: user.username}).toArray()
+    const characterList = await characters.find({username: user.username, password: user.password}).toArray()
     // crypt user details
+    if(!characterList) {
+        res.send('login failed')
+        return
+    }
     delete user.password
     const newToken = {
         username: user.username

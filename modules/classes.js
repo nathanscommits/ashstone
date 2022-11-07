@@ -149,7 +149,7 @@ export class Inventory {
             }
         })
 
-        if(!items.length) return "That item does not exist..."
+        if(!items.length || !( "quant" in items[0])) return "That item does not exist..."
 
         if(items[0].quant > this.quant && itemIndex >= 0) {
             this.foreign.inventory[itemIndex].quant -= this.quant
