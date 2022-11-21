@@ -142,7 +142,9 @@ export const modDoor = async (details) => {
     let map = await maps.findOne({id: playerDetails.location})
     
     // console.log(map)
-    if(operation === 'open' && !map.openDoors.includes(door)){
+
+    // Open Operation
+    if (operation === 'open' && !map.openDoors.includes(door)) {
         global.io.emit('sysMessage' + details.token, {msg: "You opened the door", color:'rgb(255,255,255)'})
         map.openDoors.push(door)
         maps.updateOne({id: playerDetails.location}, {$set: {openDoors: map.openDoors}}, {upsert: true})
@@ -153,9 +155,10 @@ export const modDoor = async (details) => {
             if(map2.connections[key] == playerDetails.location) {
                 maps.updateOne({id: map.connections[door]}, {$push: {openDoors: key}}, {upsert: true})
             }
-        }
+        } 
 
-    } else if(operation === 'close' && map.openDoors.includes(door)){
+    // Close Operation
+    } else if (operation === 'close' && map.openDoors.includes(door)) {
         global.io.emit('sysMessage' + details.token, {msg: "You closed the door", color:'rgb(255,255,255)'})
         const index = map.openDoors.indexOf(door)
         map.openDoors.splice(index , 1) 
@@ -169,13 +172,41 @@ export const modDoor = async (details) => {
                 maps.updateOne({id: map.connections[door]}, {$set: {openDoors: map2.openDoors}}, {upsert: true})
             }
         }
-    } else if(operation === 'check'){
+    
+    // Check Operation
+    } else if (operation === 'check') {
         const status = map.openDoors.includes(door) ? "open" : "closed"
         global.io.emit('sysMessage' + details.token, {msg: "The door to the " + door + " is " + status, color:'rgb(255,255,255)'})
-    // } else if(operation === 'lock'){ //and player has the right key
-    //     const player = await characters.findOne({name: playerDetails.username})
-    //     const hasKey = player.inventory
-    // } else if(operation === 'unlock'){
+    
+    // Lock Operation
+    } else if (operation === 'lock' && !map.locked.includes(door)) { //and player has the right key
+        const player = await characters.findOne({name: playerDetails.username})
+        const hasKey = player.inventory.items.some(item => item.keyFor === player.location && item.keyDetails.direction === "n");
+
+        if (hasKey) {
+            map.locked.push(door);
+            global.io.emit('sysMessage' + details.token, {msg: "You locked the door", colors:'rgb(255, 255, 255)'});
+        }
+        else {
+            global.io.emit('sysMessage' + details.token, {msg: "You do not have the key.", colors:'rgb(255, 255, 255)'});
+        }
+
+    // Unlock Operation
+    } else if (operation === 'unlock' && map.locked.includes(door)) {
+        const player = await characters.findOne({name: playerDetails.username});
+        const hasKey = player.inventory.items.some(item => item.keyFor === player.location && item.keyDetails.direction === "n");
+        const index = map.locked.indexOf(door);
+
+        if (hasKey) {
+            map.locked.splice(index, 1);
+            global.io.emit('sysMessage' + details.token, {msg: "You unlocked the door", colors:'rgb(255, 255, 255)'});
+        }
+        else {
+            global.io.emit('sysMessage' + details.token, {msg: "You do not have the key.", colors:'rgb(255, 255, 255)'});
+        }
+
+        
+
     // } else if(operation === 'bar'){
     // } else if(operation === 'unbar'){
     }   
