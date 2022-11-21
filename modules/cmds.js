@@ -93,7 +93,7 @@ const commands = {
     'updateitems': updateItems,
     'look': lookMap,
     'search': searchMap,
-    // 'door': modDoor,
+    'door': modDoor,
     'say': say,
     'me': say,
     'whisper': whisper,
