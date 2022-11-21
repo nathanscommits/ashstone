@@ -55,7 +55,14 @@ const item = {
     "value": 0, //the sell value of the item
     "wearableBonus": {//stat modifiers if this item is worn
         "craftCabinetry": 5
-    } 
+    },
+    "keyFor": "map1", // the map id that the key is used for, if the key is for an item then "item" is the value here
+    "keyDetails": { //details about the key
+      "direction": "n", // the name of the door the key can unlock
+      "map": "map1", // the ID of the map this key can unlock a door on
+      "items": [], //an array of item ID's (strings) that this key can unlock
+      "type": 'door' // if its a key for a door or an item
+    }
 }
 
 //maps: Maps are locations that are stitched together. They can contain items, players and NPCs, as well as several doors of different properties

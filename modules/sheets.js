@@ -166,7 +166,13 @@ export const updateItems = async () => {
             desc: s[2],
         }
         items.type = s[37]
-        items.keyFor = {}
+        items.keyFor = ""
+        items.keyDetails = {
+            direction: false,
+            map: false,
+            items: [],
+            type: 'none'
+        }
         s[36].split(";").map(m => m.trim()).forEach(j => { 
             const b = j.split(":").map( l => l.trim())
             if(b[0] === 'door') {
