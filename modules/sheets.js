@@ -172,12 +172,27 @@ export const updateItems = async () => {
             if(b[0] === 'door') {
                 b[1].split(",").map(m => m.trim()).forEach(p => { 
                     const c = p.split("=").map( q => q.trim())
-                    items.keyFor[b[0]] = {}
-                    items.keyFor[b[0]][c[0]] = c[1]
+                    // items.keyFor[b[0]] = {}
+                    // items.keyFor[b[0]][c[0]] = c[1]
+                    items.keyFor = c[0]
+                    items.keyDetails = {
+                        direction: c[1],
+                        map: c[0],
+                        items: [],
+                        type: 'door'
+                    }
                     console.log(c)
                 })
             } else if(b[0] === 'item') {
-                items.keyFor[b[0]] = b[1].split(",").map(m => m.trim())
+                // items.keyFor[b[0]] = b[1].split(",").map(m => m.trim())
+                const c = b[1].split(",").map( q => q.trim())
+                items.keyFor = 'item'
+                items.keyDetails = {
+                    direction: false,
+                    map: false,
+                    items: c,
+                    type: 'item'
+                }
             }
         })
         items.props = {
